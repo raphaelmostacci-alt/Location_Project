@@ -1,0 +1,104 @@
+Fiche Git & GitHub – Collaboration Projet
+
+1. Installer le repository sur le PC du collègue
+   git clone https://github.com/raphaelmostacci-alt/Location_Project.git
+   (Ouvre le dossier cloné dans VS Code)
+
+2. Configurer Git (une seule fois)
+   git config --global user.name "Nom"
+   git config --global user.email "email@exemple.com"
+
+3. Travailler sur le projet
+   Modifie, ajoute ou supprime des fichiers dans le dossier du projet.
+
+4. Enregistrer et envoyer les modifications
+   git add .
+   git commit -m "Message du commit"
+   git push origin main
+
+5. Récupérer les modifications du collègue
+   git pull origin main
+
+6. Créer et utiliser une branche
+   git checkout -b nom_de_branche
+   # Travailler sur la branche
+   git add .
+   git commit -m "Travail sur la branche"
+   git push origin nom_de_branche
+   (Pour revenir sur la branche principale : git checkout main)
+
+7. Fusionner une branche dans main
+   git checkout main
+   git pull origin main
+   git merge nom_de_branche
+   # Résoudre les conflits si besoin
+   git add .
+   git commit -m "Fusion branche"
+   git push origin main
+
+8. Créer un tag
+   git tag v1.0
+   git push origin v1.0
+
+9. Vérifier la branche active
+   git branch
+   (La branche avec * est celle sur laquelle tu travailles)
+
+10. Changer de branche
+    git checkout nom_de_branche
+
+11. Bonnes pratiques
+    - Toujours faire git pull origin main avant de commencer à travailler.
+    - Travailler sur des branches pour les nouvelles fonctionnalités.
+    - Fusionner dans main une fois la fonctionnalité terminée.
+    - Résoudre les conflits si Git t’en signale.
+
+URL du projet à partager :
+https://github.com/raphaelmostacci-alt/Location_Project.git
+
+Imprime cette fiche et garde-la sous la main pour toutes tes collaborations Git !
+---
+
+Récupérer un tag (version) du projet :
+---
+
+Supprimer une branche :
+---
+
+Envoyer un fichier du main vers une branche sur le serveur :
+1. Bascule sur la branche cible :
+   git checkout nom_de_branche
+   (ou crée-la avec git checkout -b nom_de_branche)
+2. Récupère le fichier depuis main :
+   git checkout main -- chemin/vers/fichier
+3. Ajoute, commit et pousse sur la branche :
+   git add chemin/vers/fichier
+   git commit -m "Ajout du fichier depuis main"
+   git push origin nom_de_branche
+1. Supprimer une branche en local :
+   git branch -d nom_de_branche
+   (utilise -D à la place de -d pour forcer la suppression)
+2. Supprimer une branche sur le dépôt distant (GitHub) :
+   git push origin --delete nom_de_branche
+1. Récupérer les tags du dépôt distant :
+   git fetch --tags
+2. Lister tous les tags disponibles :
+   git tag
+3. Se positionner sur le tag voulu (exemple v1.0) :
+   git checkout v1.0
+   (Le dossier projet reflète maintenant l’état exact du projet à ce tag)
+4. (Optionnel) Revenir à la branche principale :
+   git checkout main
+
+Interface graphique Git dans VS Code :
+
+Utilise l’icône “Source Control” (barre latérale gauche) pour faire des commits, push, pull, gérer les branches, etc. sans ligne de commande.
+La branche active s’affiche en bas à gauche.
+Extensions recommandées pour VS Code :
+
+GitLens : https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens
+Git Graph : https://marketplace.visualstudio.com/items?itemName=mhutchie.git-graph
+GitLens : historique, annotations, gestion avancée des branches, collaboration.
+Git Graph : visualisation graphique des branches et commits, gestion intuitive des merges.
+
+Tu peux installer les deux, ils sont gratuits et complémentaires.
