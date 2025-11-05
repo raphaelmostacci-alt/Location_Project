@@ -60,6 +60,14 @@ Imprime cette fiche et garde-la sous la main pour toutes tes collaborations Git 
 ---
 
 Récupérer un tag (version) du projet :
+---
+
+Supprimer une branche :
+1. Supprimer une branche en local :
+   git branch -d nom_de_branche
+   (utilise -D à la place de -d pour forcer la suppression)
+2. Supprimer une branche sur le dépôt distant (GitHub) :
+   git push origin --delete nom_de_branche
 1. Récupérer les tags du dépôt distant :
    git fetch --tags
 2. Lister tous les tags disponibles :
