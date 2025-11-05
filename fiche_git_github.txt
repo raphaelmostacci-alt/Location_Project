@@ -55,15 +55,50 @@ Fiche Git & GitHub – Collaboration Projet
 
 URL du projet à partager :
 https://github.com/raphaelmostacci-alt/Location_Project.git
-
 Imprime cette fiche et garde-la sous la main pour toutes tes collaborations Git !
----
 
 Récupérer un tag (version) du projet :
----
+```plaintext
+Tu peux installer les deux, ils sont gratuits et complémentaires.
 
-Supprimer une branche :
----
+Récupérer un seul fichier depuis une branche distante
+---------------------------------------------------
+
+Parfois tu veux juste récupérer un fichier précis depuis la branche distante (sans merger toute la branche ni cloner tout le dépôt). Voici des méthodes sûres et simples :
+
+1) Méthode recommandée (fetch + checkout du fichier)
+   # Met à jour les références distantes
+   git fetch origin nom_de_branche
+   # Remplace ou ajoute le fichier dans le working tree par la version distante
+   git checkout origin/nom_de_branche -- chemin/vers/ton_fichier.ext
+
+   Exemple :
+   git fetch origin main
+   git checkout origin/main -- structure_client/monfichier.c
+
+   Notes :
+   - Cette commande ne change pas la branche courante ; elle copie seulement le fichier indiqué depuis la branche distante dans ton working tree (et dans l'index si applicable).
+   - Si tu veux garder cette modification dans l'historique, fais ensuite :
+     git add chemin/vers/ton_fichier.ext
+     git commit -m "Récupérer <fichier> depuis origin/main"
+
+2) Alternative (écrire directement le contenu dans le fichier sans toucher l'index)
+   git fetch origin nom_de_branche
+   git show origin/nom_de_branche:chemin/vers/ton_fichier.ext > chemin/vers/ton_fichier.ext
+
+3) Si le dépôt est très gros : sparse-checkout
+   # Cloner sans checkout et activer sparse
+   git clone --no-checkout <url-du-repo> repo
+   cd repo
+   git sparse-checkout init --cone
+   git sparse-checkout set chemin/vers/sous-dossier
+   git checkout main
+
+Conseils de sécurité
+- Fais toujours un commit ou un `git stash` si tu as des modifications locales sur le même fichier pour éviter de les perdre.
+- Vérifie le chemin et le nom de la branche distante avant d'exécuter la commande.
+
+```
 
 Envoyer un fichier du main vers une branche sur le serveur :
 1. Bascule sur la branche cible :
