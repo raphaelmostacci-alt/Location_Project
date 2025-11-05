@@ -1,45 +1,30 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 20
+#define TAILLE1 20
+#define TAILLE2 50
 #define ok 0
 
-typedef struct client
-{
-    char last_name[MAX];
-    char first_name[MAX];
-    long phone_number;
-} client;
-
-#define SIZE_NAME 20
-#define SIZE_ADDRESS 50
 
 typedef struct {
-    int number; // member number
-    char last_name[SIZE_NAME];
-    char first_name[SIZE_NAME];
-    char address[SIZE_ADDRESS];
+    int numero;
+    char nom[TAILLE1];
+    char prenom[TAILLE1];
+    char adresse[TAILLE2];
     int age;
 } Etudiant;
 
 typedef struct {
-    int number; // member number
-    int fee;
+    int numero;
+    int cotisation;
 } Cotise;
+
 
 // Global file pointers for members and fees
 FILE *F_Etud = NULL;
-FILE *F_Cot = NULL;
-
-// Function prototypes
-void open_file(FILE**);
-void add_client(FILE*);
-void show_number_client(FILE*);
-void search_client(FILE*, client*);
-void find_number_client(FILE*, client);
-void change_number_client(FILE*, client);
-void menu(FILE*);
+    FILE *F_Cot = NULL;
 
 // Prototypes for member management
 void open_member_files();
@@ -53,18 +38,12 @@ void show_unpaid_members();
 void member_menu();
 
 // Main function
+
 int main(int argc, char** argv)
 {
-    FILE* file=NULL;
-
-    open_file(&file);
-    menu(file);
-
-    // Member management menu
     member_menu();
     return ok;
 }
-
 
 // Function to open member files
 void open_member_files() {
@@ -88,20 +67,20 @@ void open_member_files() {
 
 // Function to input a member
 void input_member(Etudiant* member) {
-    printf("Enter last name: ");
-    scanf("%s", member->last_name);
-    printf("Enter first name: ");
-    scanf("%s", member->first_name);
-    printf("Enter address: ");
-    scanf("%s", member->address);
-    printf("Enter age: ");
+    printf("Entrez le nom : ");
+    scanf("%s", member->nom);
+    printf("Entrez le prénom : ");
+    scanf("%s", member->prenom);
+    printf("Entrez l'adresse : ");
+    scanf("%s", member->adresse);
+    printf("Entrez l'âge : ");
     scanf("%d", &member->age);
 }
 
 // Function to display a member
 void display_member(const Etudiant* member) {
-    printf("Number: %d\tLast Name: %s\tFirst Name: %s\tAddress: %s\tAge: %d\n",
-        member->number, member->last_name, member->first_name, member->address, member->age);
+    printf("Numéro: %d\tNom: %s\tPrénom: %s\tAdresse: %s\tÂge: %d\n",
+        member->numero, member->nom, member->prenom, member->adresse, member->age);
 }
 
 // Function to save a member to file
@@ -131,7 +110,7 @@ int get_last_member_number() {
     if (F_Etud == NULL) return 0;
     fseek(F_Etud, 0, SEEK_SET);
     while (fread(&temp, sizeof(Etudiant), 1, F_Etud) == 1) {
-        last_number = temp.number;
+        last_number = temp.numero;
     }
     return last_number;
 }
@@ -143,15 +122,15 @@ void insert_new_member() {
     int last_number;
 
     last_number = get_last_member_number();
-    new_member.number = last_number + 1;
+    new_member.numero = last_number + 1;
     input_member(&new_member);
     display_member(&new_member);
     save_member(&new_member);
 
-    new_fee.number = new_member.number;
-    new_fee.fee = 0; // Not paid yet
+    new_fee.numero = new_member.numero;
+    new_fee.cotisation = 0; // Non réglée
     save_fee(&new_fee);
-    printf("New member inserted with number %d\n", new_member.number);
+    printf("Nouvel adhérent inséré avec le numéro %d\n", new_member.numero);
 }
 
 // Function to show unpaid members
@@ -164,11 +143,11 @@ void show_unpaid_members() {
     }
     fseek(F_Cot, 0, SEEK_SET);
     while (fread(&fee, sizeof(Cotise), 1, F_Cot) == 1) {
-        if (fee.fee == 0) {
-            // Find member in Etudiants.dat
+        if (fee.cotisation == 0) {
+            // Recherche de l'étudiant dans Etudiants.dat
             fseek(F_Etud, 0, SEEK_SET);
             while (fread(&member, sizeof(Etudiant), 1, F_Etud) == 1) {
-                if (member.number == fee.number) {
+                if (member.numero == fee.numero) {
                     display_member(&member);
                     break;
                 }
