@@ -63,6 +63,18 @@ Récupérer un tag (version) du projet :
 ---
 
 Supprimer une branche :
+---
+
+Envoyer un fichier du main vers une branche sur le serveur :
+1. Bascule sur la branche cible :
+   git checkout nom_de_branche
+   (ou crée-la avec git checkout -b nom_de_branche)
+2. Récupère le fichier depuis main :
+   git checkout main -- chemin/vers/fichier
+3. Ajoute, commit et pousse sur la branche :
+   git add chemin/vers/fichier
+   git commit -m "Ajout du fichier depuis main"
+   git push origin nom_de_branche
 1. Supprimer une branche en local :
    git branch -d nom_de_branche
    (utilise -D à la place de -d pour forcer la suppression)
