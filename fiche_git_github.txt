@@ -57,6 +57,18 @@ URL du projet à partager :
 https://github.com/raphaelmostacci-alt/Location_Project.git
 
 Imprime cette fiche et garde-la sous la main pour toutes tes collaborations Git !
+---
+
+Récupérer un tag (version) du projet :
+1. Récupérer les tags du dépôt distant :
+   git fetch --tags
+2. Lister tous les tags disponibles :
+   git tag
+3. Se positionner sur le tag voulu (exemple v1.0) :
+   git checkout v1.0
+   (Le dossier projet reflète maintenant l’état exact du projet à ce tag)
+4. (Optionnel) Revenir à la branche principale :
+   git checkout main
 
 Interface graphique Git dans VS Code :
 
