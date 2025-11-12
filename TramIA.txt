@@ -1,0 +1,47 @@
+
+Voici la trame complète et validée pour ton projet “meeting-room” en C, à conserver comme référence :
+
+1. Organisation des fichiers
+
+	- client_management.h / .c
+		* Structure : client_user (last_name, first_name, mail)
+		* Fonctions : show_all_clients, search_client, add_client, edit_client, delete_client, client_management_menu
+		* Prototypes dans le .h, implémentations dans le .c
+
+	- room_management.h / .c
+		* Structure : room (name, size, id, available)
+		* Fonctions : show_all_room, add_room, edit_room, delete_room, room_management_menu
+		* Prototypes dans le .h, implémentations dans le .c
+
+	- reservation_room.h / .c
+		* Structure : reservation_room (client mail, room id, reservation id, date)
+		* Structure de date (dans ce .h ou un .h commun si besoin ailleurs)
+		* Fonctions : show_available_room, show_room_locked_by_client, book_reservation, edit_reservation, delete_reservation, reservation_room_menu
+		* Prototypes dans le .h, implémentations dans le .c
+
+	- administrator.h / .c
+		* Fonctions : administrator_menu (appelle les menus/fonctions de client_management, room_management, reservation_room)
+		* Prototypes dans le .h, implémentations dans le .c
+
+	- useful_fonction.h / .c (ou utils.h / .c)
+		* Fonctions utilitaires : exit_application, return_menu, autres fonctions génériques
+		* Prototypes dans le .h, implémentations dans le .c
+		* Inclusion des bibliothèques standards nécessaires
+
+	- meeting_room.c
+		* Fonction principale int main()
+		* Appel à la fonction d’authentification (account_authentification)
+		* Si utilisateur reconnu : accès aux menus utilisateur ou administrateur
+		* Si utilisateur inconnu : appel à add_client de client_management pour inscription
+
+2. Conseils de structuration
+
+	- Place les structures partagées (ex : date) dans un .h commun si besoin.
+	- Utilise des identifiants uniques pour les clients et les salles pour faciliter la gestion des réservations.
+	- Chaque module doit gérer ses propres fichiers de données (clients.dat, rooms.dat, etc.).
+	- Privilégie la modularité et la clarté du code (un .h/.c par module).
+	- Prévois des messages d’erreur ou de succès pour chaque action utilisateur.
+	- Vérifie la cohérence des données lors des suppressions/modifications (ex : suppression d’un client ou d’une salle doit entraîner la suppression/invalidation des réservations associées).
+
+Cette trame te servira de guide pour l’architecture, la rédaction des fichiers et la progression du projet.
+Tu peux la copier/coller dans ta documentation ou ton README pour t’y référer à tout moment.
