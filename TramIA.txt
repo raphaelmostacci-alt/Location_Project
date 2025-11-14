@@ -8,9 +8,11 @@ Voici la trame complète et validée pour ton projet “meeting-room” en C, à
 		* Fonctions : show_all_clients, search_client, add_client, edit_client, delete_client, client_management_menu
 		* Prototypes dans le .h, implémentations dans le .c
 
+
 	- room_management.h / .c
 		* Structure : room (name, size, id, available)
-		* Fonctions : show_all_room, add_room, edit_room, delete_room, room_management_menu
+		* Remarque : la suppression d'une salle ne la retire pas du fichier, mais la rend indisponible (available = NO). On ne supprime jamais physiquement une salle.
+		* Fonctions : show_all_room, add_room, edit_room, delete_room (rend indisponible), room_management_menu
 		* Prototypes dans le .h, implémentations dans le .c
 
 	- reservation_room.h / .c
@@ -41,7 +43,9 @@ Voici la trame complète et validée pour ton projet “meeting-room” en C, à
 	- Chaque module doit gérer ses propres fichiers de données (clients.dat, rooms.dat, etc.).
 	- Privilégie la modularité et la clarté du code (un .h/.c par module).
 	- Prévois des messages d’erreur ou de succès pour chaque action utilisateur.
+
 	- Vérifie la cohérence des données lors des suppressions/modifications (ex : suppression d’un client ou d’une salle doit entraîner la suppression/invalidation des réservations associées).
+	- Remarque : dans ce projet, la suppression d'une salle ou d'un client consiste à les rendre indisponibles dans le fichier de données, et non à les supprimer physiquement. Cette règle doit être respectée dans toutes les fonctions de suppression.
 
 Cette trame te servira de guide pour l’architecture, la rédaction des fichiers et la progression du projet.
 Tu peux la copier/coller dans ta documentation ou ton README pour t’y référer à tout moment.
