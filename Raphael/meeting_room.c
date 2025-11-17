@@ -53,11 +53,14 @@ void account_authentification()
             scanf("%d", &choice);
             getchar(); // consume newline
             if (choice == 1)
-// ...existing code...
-
             {
+                int before = search_client(last_name, first_name);
                 add_client();
-                printf("Account created. Please login again.\n");
+                int after = search_client(last_name, first_name);
+                if (!before && after)
+                {
+                    printf("Account created. Please login again.\n");
+                }
             }
             else if (choice == 3)
             {
