@@ -1,6 +1,7 @@
 // ...existing code...
 #include "includes.h"
 #include "client_management.h"
+#include "useful_fonction.h"
 #define CLIENTS_DATA_FILE "clients.dat"
 
 
@@ -10,20 +11,39 @@ void show_all_clients()
 	FILE *f = fopen(CLIENTS_DATA_FILE, "rb");
 	if (!f)
 	{
-		printf("Error opening client file.\n");
+		printf("[ERROR] Unable to open clients.dat for listing.\n");
 		return;
 	}
 	client_user c;
-	int count = 0;
+	client_user disabled_clients[1000];
+	int disabled_count = 0;
+	client_user enabled_clients[1000];
+	int enabled_count = 0;
 	printf("\n--- All Registered Clients ---\n");
 	while (fread(&c, sizeof(client_user), 1, f) == 1)
 	{
-		printf("%d. Last name: %s | First name: %s | Email: %s\n", ++count, c.last_name, c.first_name, c.mail);
+		if (!c.available)
+		{
+			disabled_clients[disabled_count++] = c;
+		}
+		else
+		{
+			enabled_clients[enabled_count++] = c;
+		}
 	}
 	fclose(f);
+	int count = 0;
+	for (int i = 0; i < disabled_count; i++)
+	{
+		printf("%d. [DISABLED] Last name: %s | First name: %s | Email: %s\n", ++count, disabled_clients[i].last_name, disabled_clients[i].first_name, disabled_clients[i].mail);
+	}
+	for (int i = 0; i < enabled_count; i++)
+	{
+		printf("%d. Last name: %s | First name: %s | Email: %s\n", ++count, enabled_clients[i].last_name, enabled_clients[i].first_name, enabled_clients[i].mail);
+	}
 	if (count == 0)
 	{
-		printf("No clients found in the database.\n");
+		printf("[INFO] No clients found in the database.\n");
 	}
 }
 
@@ -35,9 +55,9 @@ int search_client(const char *last_name, const char *first_name)
 	if (!f) return 0;
 	client_user c;
 	while (fread(&c, sizeof(client_user), 1, f) == 1) 
-    {
-		if (strcmp(c.last_name, last_name) == 0 && strcmp(c.first_name, first_name) == 0) 
-        {
+	{
+		if (strcmp(c.last_name, last_name) == 0 && strcmp(c.first_name, first_name) == 0 && c.available) 
+		{
 			fclose(f);
 			return 1;
 		}
@@ -51,7 +71,7 @@ int search_client(const char *last_name, const char *first_name)
 void add_client() 
 {
 	client_user new_client;
-	printf("\n--- Add a client ---\n");
+	printf("\n--- Add a new client ---\n");
 	printf("Last name: ");
 	fgets(new_client.last_name, MAX_SIZE, stdin);
 	new_client.last_name[strcspn(new_client.last_name, "\n")] = '\0';
@@ -67,37 +87,56 @@ void add_client()
 	// Basic check
 	if(strlen(new_client.last_name) == 0 || strlen(new_client.first_name) == 0 || strlen(new_client.mail) == 0)
 	{
-		printf("Error: all fields must be filled.\n");
+		printf("[ERROR] All fields must be filled.\n");
 		return;
 	}
 
-	// Check if client already exists
-	FILE *f_check = fopen(CLIENTS_DATA_FILE, "rb");
+	// Check for existing client (by name)
+	int found_disabled = 0;
+	FILE *f_check = fopen(CLIENTS_DATA_FILE, "r+b");
 	if (f_check)
 	{
 		client_user c;
+		long pos = 0;
 		while (fread(&c, sizeof(client_user), 1, f_check) == 1)
 		{
 			if (strcmp(c.last_name, new_client.last_name) == 0 && strcmp(c.first_name, new_client.first_name) == 0)
 			{
-				printf("Error: client already exists.\n");
-				fclose(f_check);
-				return;
+				if (c.available) 
+				{
+					printf("[ERROR] A client with this name already exists and is enabled. Client not added.\n");
+					fclose(f_check);
+					return;
+				} 
+				else 
+				{
+					// Reactivate the disabled client
+					found_disabled = 1;
+					c.available = 1;
+					strncpy(c.mail, new_client.mail, MAX_SIZE);
+					fseek(f_check, pos, SEEK_SET);
+					fwrite(&c, sizeof(client_user), 1, f_check);
+					printf("[SUCCESS] Existing disabled client re-enabled and updated!\n");
+					fclose(f_check);
+					return;
+				}
 			}
+			pos += sizeof(client_user);
 		}
 		fclose(f_check);
 	}
 
 	// Add to the data file
+	new_client.available = 1; // Mark as available
 	FILE *f_add = fopen(CLIENTS_DATA_FILE, "ab");
 	if (!f_add)
 	{
-		printf("Error opening client file.\n");
+		printf("[ERROR] Unable to open clients.dat for adding new client.\n");
 		return;
 	}
 	fwrite(&new_client, sizeof(client_user), 1, f_add);
 	fclose(f_add);
-	printf("Client added successfully!\n");
+	printf("[SUCCESS] Client added successfully!\n");
 }
 
 
@@ -143,23 +182,23 @@ void edit_client(client_user *client)
 	FILE *f = fopen(CLIENTS_DATA_FILE, "r+b");
 	if (!f)
 	{
-		printf("Error opening client file for update.\n");
+		printf("[ERROR] Unable to open clients.dat for client update.\n");
 		return;
 	}
 	client_user c;
 	while (fread(&c, sizeof(client_user), 1, f) == 1)
 	{
-		if (strcmp(c.last_name, old_last_name) == 0 && strcmp(c.first_name, old_first_name) == 0)
+		if (strcmp(c.last_name, old_last_name) == 0 && strcmp(c.first_name, old_first_name) == 0 && c.available)
 		{
 			fseek(f, -sizeof(client_user), SEEK_CUR);
 			fwrite(client, sizeof(client_user), 1, f);
-			printf("Client information updated successfully!\n");
+			printf("[SUCCESS] Client information updated successfully!\n");
 			fclose(f);
 			return;
 		}
 	}
 	fclose(f);
-	printf("Error: client not found for update.\n");
+	printf("[ERROR] Client not found for update.\n");
 }
 
 
@@ -171,42 +210,31 @@ void delete_client(client_user *client)
 	strncpy(old_last_name, client->last_name, MAX_SIZE);
 	strncpy(old_first_name, client->first_name, MAX_SIZE);
 
-	FILE *f = fopen(CLIENTS_DATA_FILE, "rb");
+	FILE *f = fopen(CLIENTS_DATA_FILE, "r+b");
 	if (!f)
 	{
-		printf("Error opening client file for deletion.\n");
-		return;
-	}
-	FILE *temp = fopen("clients_temp.dat", "wb");
-	if (!temp)
-	{
-		printf("Error creating temporary file.\n");
-		fclose(f);
+		printf("[ERROR] Unable to open clients.dat for client logical deletion.\n");
 		return;
 	}
 	client_user c;
 	int deleted = 0;
 	while (fread(&c, sizeof(client_user), 1, f) == 1)
 	{
-		if (strcmp(c.last_name, old_last_name) == 0 && strcmp(c.first_name, old_first_name) == 0)
+		if (strcmp(c.last_name, old_last_name) == 0 && strcmp(c.first_name, old_first_name) == 0 && c.available)
 		{
+			c.available = 0; // Mark as unavailable
+			fseek(f, -sizeof(client_user), SEEK_CUR);
+			fwrite(&c, sizeof(client_user), 1, f);
 			deleted = 1;
-			continue; // skip writing this client
+			printf("[SUCCESS] Client logically deleted (unavailable)!\n");
+			// TODO: When integrating with reservation_room, invalidate reservations for this client here.
+			break;
 		}
-		fwrite(&c, sizeof(client_user), 1, temp);
 	}
 	fclose(f);
-	fclose(temp);
-	if (deleted)
+	if (!deleted)
 	{
-		remove(CLIENTS_DATA_FILE);
-		rename("clients_temp.dat", CLIENTS_DATA_FILE);
-		printf("Client deleted successfully!\n");
-	}
-	else
-	{
-		remove("clients_temp.dat");
-		printf("Client not found for deletion.\n");
+		printf("[ERROR] Client not found for logical deletion.\n");
 	}
 }
 
@@ -218,10 +246,11 @@ void client_management_menu()
 	while (!quit)
 	{
 		printf("\n==== Client Management Menu ====\n");
-        printf("1. Show Clients\n");
-        printf("2. Search Client\n");
-        printf("3. Add Client\n");
-        printf("4. Exit\n");
+		printf("1. Show all clients\n");
+		printf("2. Search client\n");
+		printf("3. Add client\n");
+		printf("4. Return to previous menu\n");
+		printf("5. Exit Application\n");
 		printf("Choose an option: ");
 		int choice = 0;
 
@@ -230,13 +259,9 @@ void client_management_menu()
 		switch (choice)
 		{
 			case 1:
-			{
 				show_all_clients();
 				break;
-			}
 			case 2:
-			{
-				printf("Search client selected.\n");
 				char last_name[MAX_SIZE];
 				char first_name[MAX_SIZE];
 				printf("Enter client's last name: ");
@@ -248,7 +273,7 @@ void client_management_menu()
 				FILE *f = fopen(CLIENTS_DATA_FILE, "rb");
 				if (!f)
 				{
-					printf("Error opening client file.\n");
+					printf("[ERROR] Unable to open clients.dat for searching.\n");
 					break;
 				}
 				client_user c;
@@ -262,6 +287,9 @@ void client_management_menu()
 						printf("Last name: %s\n", c.last_name);
 						printf("First name: %s\n", c.first_name);
 						printf("Email: %s\n", c.mail);
+						if (!c.available) {
+							printf("[INFO] This client is DISABLED (unavailable).\n");
+						}
 						// TODO: Display reserved rooms for this client
 
 						int sub_quit = 0;
@@ -305,25 +333,24 @@ void client_management_menu()
 				fclose(f);
 				if (!found)
 				{
-					printf("Client not found.\n");
+					printf("[ERROR] Client not found in database.\n");
 				}
 				break;
-			}
 			case 3:
-			{
 				add_client();
 				break;
-			}
 			case 4:
-			{
+				quit = 1;
+				printf("Returning to previous menu.\n");
+				break;
+			case 5:
 				quit = 1;
 				printf("Exiting client management menu.\n");
+				exit_application();
 				break;
-			}
 			default:
-			{
 				printf("Invalid option. Try again.\n");
-			}
+				break;
 		}
 	}
 }

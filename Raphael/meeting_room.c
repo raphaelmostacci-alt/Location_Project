@@ -1,13 +1,14 @@
 #include "administrator.h"
 #include "client_management.h"
 #include "includes.h"
+#include "useful_fonction.h"
 
 void account_authentification();
 
 int main()
 {
     account_authentification();
-    return 0;
+    exit_application();
 }
 
 
@@ -26,9 +27,7 @@ void account_authentification()
         last_name[strcspn(last_name, "\n")] = 0;
             if (strcmp(last_name, "EXIT") == 0)
             {
-                printf("Exiting application.\n");
-                quit = 1; // Set quit to 1 to exit the loop
-                break;
+                exit_application();
             }
 
             printf("Enter your first name (or type EXIT to quit): ");
@@ -36,9 +35,7 @@ void account_authentification()
         first_name[strcspn(first_name, "\n")] = 0;
             if (strcmp(first_name, "EXIT") == 0)
             {
-                printf("Exiting application.\n");
-                quit = 1; // Set quit to 1 to exit the loop
-                break;
+                exit_application();
             }
 
         int user_exists = search_client(last_name, first_name);
@@ -48,10 +45,12 @@ void account_authentification()
         if (user_exists)
         {
             printf("Welcome, %s %s!\n", first_name, last_name);
-            if (is_admin) {
+            if (is_admin) 
+            {
                 printf("You are an administrator.\n");
                 administrator_menu();
-            } else 
+            } 
+            else 
 			{
                 printf("You are a regular user.\n");
                 // TODO: call user menu
@@ -60,7 +59,7 @@ void account_authentification()
         else
         {
             printf("Account not found.\n");
-            printf("1. Create a new account\n2. Try again\n3. Exit application\nChoose an option: ");
+            printf("1. Create a new account\n2. Try again\n3. Exit Application\nChoose an option: ");
             int choice = 0;
             scanf("%d", &choice);
             getchar(); // consume newline
@@ -76,8 +75,7 @@ void account_authentification()
             }
             else if (choice == 3)
             {
-                quit = 1;
-                printf("Exiting application.\n");
+                exit_application();
             }
         }
     }

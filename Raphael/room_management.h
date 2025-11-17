@@ -12,12 +12,14 @@ typedef struct room_user {
 } room_user;
 
 
-// Prototypes des fonctions de gestion des salles
+// Room management function prototypes
 void show_all_rooms();
 void search_room();
 void add_room();
-void edit_room();
-void delete_room();
+void edit_room(room_user *room); // Prototype matches implementation
+void delete_room(room_user *room); // Prototype matches implementation
 void room_management_menu();
+
+// TODO: When integrating with reservation_room, add prototypes for cross-module checks (e.g., invalidate reservations when a room is deleted).
 
 #endif // ROOM_MANAGEMENT_H

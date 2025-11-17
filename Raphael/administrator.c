@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include "includes.h"
 #include "client_management.h"
 #include "room_management.h"
+#include "useful_fonction.h"
 
 void administrator_menu() 
 {
@@ -11,7 +12,7 @@ void administrator_menu()
 		printf("1. Room Management\n");
 		printf("2. Client Management\n");
 		printf("3. Reservation Management\n");
-		printf("4. Exit\n");
+		printf("4. Exit Application\n");
 		printf("Choose an option: ");
 		int choice = 0;
 		scanf("%d", &choice);
@@ -30,12 +31,10 @@ void administrator_menu()
 				printf("Reservation management selected.\n");
 				break;
 			case 4:
-				quit = 1;
-				printf("Exiting administrator menu.\n");
+				exit_application();
 				break;
 			default:
 				printf("Invalid option. Try again.\n");
 		}
 	}
 }
-// Fonctions pour le menu administrateur

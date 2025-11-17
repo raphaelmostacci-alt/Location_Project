@@ -1,7 +1,8 @@
-#include <stdio.h>
+#include "includes.h"
 #include <string.h>
 #include "room_management.h"
 #include "includes.h"
+#include "useful_fonction.h"
 #define ROOMS_DATA_FILE "rooms.dat"
 
 
@@ -11,7 +12,7 @@ void delete_room(room_user *room)
     FILE *f = fopen(ROOMS_DATA_FILE, "r+b");
     if (!f)
     {
-        printf("Error opening rooms.dat file for update.\n");
+        printf("[ERROR] Unable to open rooms.dat for logical deletion.\n");
         return;
     }
     room_user r;
@@ -22,13 +23,14 @@ void delete_room(room_user *room)
             r.available = 0;
             fseek(f, -sizeof(room_user), SEEK_CUR);
             fwrite(&r, sizeof(room_user), 1, f);
-            printf("Room ID %d is now unavailable.\n", room->id);
+            printf("[SUCCESS] Room ID %d is now unavailable.\n", room->id);
             fclose(f);
+            // TODO: When integrating with reservation_room, invalidate reservations for this room here.
             return;
         }
     }
     fclose(f);
-    printf("Room not found for deletion.\n");
+    printf("[ERROR] Room not found for logical deletion.\n");
 }
 
 // Edit a room's information by ID (called from search)
@@ -37,7 +39,7 @@ void edit_room_by_id(int id)
     FILE *f = fopen(ROOMS_DATA_FILE, "r+b");
     if (!f)
     {
-        printf("Error opening rooms.dat file.\n");
+        printf("[ERROR] Unable to open rooms.dat for editing.\n");
         return;
     }
     room_user r;
@@ -66,14 +68,14 @@ void edit_room_by_id(int id)
             if (new_available == 0 || new_available == 1) r.available = new_available;
             fseek(f, -sizeof(room_user), SEEK_CUR);
             fwrite(&r, sizeof(room_user), 1, f);
-            printf("Room updated successfully!\n");
+            printf("[SUCCESS] Room updated successfully!\n");
             break;
         }
     }
     fclose(f);
     if (!found)
     {
-        printf("Room with ID %d not found.\n", id);
+        printf("[ERROR] Room with ID %d not found for editing.\n", id);
     }
 }
 
@@ -136,7 +138,7 @@ void search_room()
     fclose(f);
     if (!found)
     {
-        printf("Room not found.\n");
+        printf("[ERROR] Room not found in database.\n");
     }
 }
 
@@ -177,7 +179,7 @@ void edit_room(room_user *room)
     FILE *f = fopen(ROOMS_DATA_FILE, "r+b");
     if (!f)
     {
-        printf("Error opening rooms.dat file for update.\n");
+        printf("[ERROR] Unable to open rooms.dat for room update.\n");
         return;
     }
     room_user r;
@@ -193,7 +195,7 @@ void edit_room(room_user *room)
         }
     }
     fclose(f);
-    printf("Error: room not found for update.\n");
+    printf("[ERROR] Room not found for update.\n");
 }
 
 // Show all rooms in the database
@@ -202,7 +204,7 @@ void show_all_rooms()
     FILE *f = fopen(ROOMS_DATA_FILE, "rb");
     if (!f)
     {
-        printf("Error opening rooms file.\n");
+        printf("[ERROR] Unable to open rooms.dat for listing.\n");
         return;
     }
     room_user r;
@@ -215,7 +217,7 @@ void show_all_rooms()
     fclose(f);
     if (count == 0)
     {
-        printf("No rooms found in the database.\n");
+        printf("[INFO] No rooms found in the database.\n");
     }
 }
 
@@ -238,7 +240,7 @@ void add_room()
     scanf("%d", &new_room.available);
     getchar();
 
-    // Check for unique ID
+    // Check for unique ID (robust)
     int id_exists = 0;
     FILE *f = fopen(ROOMS_DATA_FILE, "rb");
     if (f)
@@ -256,7 +258,7 @@ void add_room()
     }
     if (id_exists)
     {
-        printf("Error: a room with this ID already exists. Room not added.\n");
+        printf("[ERROR] A room with this ID already exists. Room not added.\n");
         return;
     }
 
@@ -264,12 +266,13 @@ void add_room()
     f = fopen(ROOMS_DATA_FILE, "ab");
     if (!f)
     {
-        printf("Error opening rooms.dat file.\n");
+        printf("[ERROR] Unable to open rooms.dat for adding new room.\n");
         return;
     }
     fwrite(&new_room, sizeof(room_user), 1, f);
     fclose(f);
-    printf("Room added successfully!\n");
+    printf("[SUCCESS] Room added successfully!\n");
+    // TODO: When integrating with reservation_room, ensure new room is available for reservation.
 }
 
 void room_management_menu()
@@ -281,8 +284,10 @@ void room_management_menu()
         printf("1. Show all rooms\n");
         printf("2. Search room\n");
         printf("3. Add room\n");
-        printf("4. Exit Application\n");
+        printf("4. Return to previous menu\n");
+        printf("5. Exit Application\n");
         printf("Choose an option: ");
+        // TODO: Future integration - when deleting a room, check for and invalidate related reservations.
         int choice = 0;
         scanf("%d", &choice);
         getchar(); // consume newline
@@ -299,7 +304,12 @@ void room_management_menu()
                 break;
             case 4:
                 quit = 1;
+                printf("Returning to previous menu.\n");
+                break;
+            case 5:
+                quit = 1;
                 printf("Exiting room management menu.\n");
+                exit_application();
                 break;
             default:
                 printf("Invalid option. Try again.\n");

@@ -11,6 +11,7 @@ typedef struct
 	char last_name[MAX_SIZE];
 	char first_name[MAX_SIZE];
 	char mail[MAX_SIZE];
+	int available; // 1 = available, 0 = not available (logical deletion)
 } client_user;
 
 // Prototypes for client management functions
