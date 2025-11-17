@@ -1,6 +1,9 @@
 
+
 #ifndef CLIENT_MANAGEMENT_H
 #define CLIENT_MANAGEMENT_H
+
+#include "includes.h"
 
 #define TAILLE_MAX 100
 
@@ -11,7 +14,7 @@ typedef struct
 	char mail[TAILLE_MAX];
 } client_user;
 
-// Prototypes des fonctions de gestion des clients
+// Prototypes for client management functions
 void show_all_clients();
 int search_client(const char *last_name, const char *first_name);
 void add_client();
