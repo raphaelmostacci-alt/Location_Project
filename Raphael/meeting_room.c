@@ -21,13 +21,25 @@ void account_authentification()
     char first_name[MAX_SIZE];
 
         printf("==== Meeting Room Login ====\n");
-        printf("Enter your last name: ");
+            printf("Enter your last name (or type EXIT to quit): ");
         fgets(last_name, 50, stdin);
         last_name[strcspn(last_name, "\n")] = 0;
+            if (strcmp(last_name, "EXIT") == 0)
+            {
+                printf("Exiting application.\n");
+                quit = 1; // Set quit to 1 to exit the loop
+                break;
+            }
 
-        printf("Enter your first name: ");
+            printf("Enter your first name (or type EXIT to quit): ");
         fgets(first_name, 50, stdin);
         first_name[strcspn(first_name, "\n")] = 0;
+            if (strcmp(first_name, "EXIT") == 0)
+            {
+                printf("Exiting application.\n");
+                quit = 1; // Set quit to 1 to exit the loop
+                break;
+            }
 
         int user_exists = search_client(last_name, first_name);
         int is_admin = ((strcmp(last_name, "BLACHERE") == 0 && strcmp(first_name, "Romain") == 0) ||
@@ -48,7 +60,7 @@ void account_authentification()
         else
         {
             printf("Account not found.\n");
-            printf("1. Create a new account\n2. Try again\n3. Quit\nChoose an option: ");
+            printf("1. Create a new account\n2. Try again\n3. Exit application\nChoose an option: ");
             int choice = 0;
             scanf("%d", &choice);
             getchar(); // consume newline

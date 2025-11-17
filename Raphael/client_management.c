@@ -4,10 +4,6 @@
 #define CLIENTS_DATA_FILE "clients.dat"
 
 
-// ...existing code...
-#include "includes.h"
-#include "client_management.h"
-#define CLIENTS_DATA_FILE "clients.dat"
 // Show all clients in the database
 void show_all_clients()
 {
@@ -68,7 +64,7 @@ void add_client()
 	fgets(new_client.mail, MAX_SIZE, stdin);
 	new_client.mail[strcspn(new_client.mail, "\n")] = '\0';
 
-	// Basic check (improve if needed)
+	// Basic check
 	if(strlen(new_client.last_name) == 0 || strlen(new_client.first_name) == 0 || strlen(new_client.mail) == 0)
 	{
 		printf("Error: all fields must be filled.\n");
@@ -284,6 +280,7 @@ void client_management_menu()
 							{
 								case 1:
 									edit_client(&c);
+									sub_quit = 1;
 									break;
 								case 2:
 									delete_client(&c);

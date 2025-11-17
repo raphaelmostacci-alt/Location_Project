@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "client_management.h"
+#include "room_management.h"
 
 void administrator_menu() 
 {
@@ -18,8 +19,7 @@ void administrator_menu()
 		switch (choice) 
         {
 			case 1:
-				// TODO: call room_management_menu();
-				printf("Room management selected.\n");
+				room_management_menu();
 				break;
 			case 2:
 				printf("Client management selected.\n");
