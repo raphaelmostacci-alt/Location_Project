@@ -1,7 +1,5 @@
 #include "includes.h"
-#include <string.h>
 #include "room_management.h"
-#include "includes.h"
 #include "useful_fonction.h"
 #define ROOMS_DATA_FILE "rooms.dat"
 
@@ -280,6 +278,7 @@ void room_management_menu()
     int quit = 0;
     while (!quit)
     {
+        printf("\n");
         printf("\n==== Room Management Menu ====\n");
         printf("1. Show all rooms\n");
         printf("2. Search room\n");
