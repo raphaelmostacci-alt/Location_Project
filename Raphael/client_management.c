@@ -1,3 +1,9 @@
+// Includes for standard libraries and client structure/prototypes
+#include <stdio.h>
+#include <string.h>
+#include "client_management.h"
+#include "includes.h"
+
 // Add a new client to clients.dat
 void add_client()
 {
@@ -22,14 +28,11 @@ void add_client()
 		printf("Error: cannot open clients.dat for writing.\n");
 		return;
 	}
-	fprintf(file, "%s %s %s\n", new_client.last_name, new_client.first_name, new_client.mail);
+	fprintf(file, "%s;%s;%s;1\n", new_client.last_name, new_client.first_name, new_client.mail);
 	fclose(file);
 	printf("Account successfully created!\n");
 }
 
-// Includes for standard libraries and client structure/prototypes
-#include "client_management.h"
-#include "includes.h"
 
 // Search for a client by last name and first name in clients.dat
 int search_client(const char *last_name, const char *first_name)
