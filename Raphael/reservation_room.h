@@ -2,7 +2,7 @@
 #ifndef RESERVATION_ROOM_H
 #define RESERVATION_ROOM_H
 
-#define TAILLE_MAX 100
+#define MAX_SIZE 100
 
 typedef struct {
 	int day;
@@ -11,7 +11,7 @@ typedef struct {
 } Date;
 
 typedef struct {
-	char client_mail[TAILLE_MAX];
+	char client_mail[MAX_SIZE];
 	int room_id;
 	int reservation_id;
 	Date date;

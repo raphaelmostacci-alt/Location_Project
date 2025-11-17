@@ -1,3 +1,4 @@
+void client_management_menu();
 
 
 #ifndef CLIENT_MANAGEMENT_H
@@ -5,13 +6,13 @@
 
 #include "includes.h"
 
-#define TAILLE_MAX 100
+#define MAX_SIZE 100
 
 typedef struct 
 {
-	char last_name[TAILLE_MAX];
-	char first_name[TAILLE_MAX];
-	char mail[TAILLE_MAX];
+	char last_name[MAX_SIZE];
+	char first_name[MAX_SIZE];
+	char mail[MAX_SIZE];
 } client_user;
 
 // Prototypes for client management functions

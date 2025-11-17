@@ -2,10 +2,10 @@
 #ifndef ROOM_MANAGEMENT_H
 #define ROOM_MANAGEMENT_H
 
-#define TAILLE_MAX 100
+#define MAX_SIZE 100
 
 typedef struct {
-	char name[TAILLE_MAX];
+	char name[MAX_SIZE];
 	int size;
 	int id;
 	int available; // 1 = YES, 0 = NO

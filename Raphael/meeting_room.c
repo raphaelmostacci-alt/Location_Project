@@ -1,3 +1,4 @@
+#include "administrator.h"
 #include "client_management.h"
 #include "includes.h"
 
@@ -16,8 +17,8 @@ void account_authentification()
     int quit = 0;
     while (!authenticated && !quit)
     {
-        char last_name[50];
-        char first_name[50];
+    char last_name[MAX_SIZE];
+    char first_name[MAX_SIZE];
 
         printf("==== Meeting Room Login ====\n");
         printf("Enter your last name: ");
@@ -35,11 +36,11 @@ void account_authentification()
         if (user_exists)
         {
             printf("Welcome, %s %s!\n", first_name, last_name);
-            authenticated = 1;
             if (is_admin) {
                 printf("You are an administrator.\n");
-                // TODO: call administrator_menu();
-            } else {
+                administrator_menu();
+            } else 
+			{
                 printf("You are a regular user.\n");
                 // TODO: call user menu
             }
@@ -52,6 +53,8 @@ void account_authentification()
             scanf("%d", &choice);
             getchar(); // consume newline
             if (choice == 1)
+// ...existing code...
+
             {
                 add_client();
                 printf("Account created. Please login again.\n");
