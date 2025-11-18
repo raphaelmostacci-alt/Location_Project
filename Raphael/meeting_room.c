@@ -7,6 +7,7 @@ void account_authentification();
 
 int main()
 {
+    load_clients();
     account_authentification();
     exit_application();
 }
@@ -51,9 +52,17 @@ void account_authentification()
                 administrator_menu();
             } 
             else 
-			{
+            {
                 printf("You are a regular user.\n");
-                // TODO: call user menu
+                // Set current user email for reservation module
+                for (int i = 0; i < client_count; i++) {
+                    if (strcmp(clients[i].last_name, last_name) == 0 && strcmp(clients[i].first_name, first_name) == 0) {
+                        extern char current_user_email[MAX_SIZE];
+                        strncpy(current_user_email, clients[i].mail, MAX_SIZE);
+                        break;
+                    }
+                }
+                reservation_room_menu();
             }
         }
         else

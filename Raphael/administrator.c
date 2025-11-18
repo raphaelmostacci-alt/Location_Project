@@ -11,7 +11,7 @@ void administrator_menu()
 		printf("\n==== Administrator Menu ====\n");
 		printf("1. Room Management\n");
 		printf("2. Client Management\n");
-		printf("3. Reservation Management\n");
+		printf("3. Room Reservation\n");
 		printf("4. Exit Application\n");
 		printf("Choose an option: ");
 		int choice = 0;
@@ -27,8 +27,7 @@ void administrator_menu()
 				client_management_menu();
 				break;
 			case 3:
-				// TODO: call reservation_room_menu();
-				printf("Reservation management selected.\n");
+				reservation_room_menu();
 				break;
 			case 4:
 				exit_application();
