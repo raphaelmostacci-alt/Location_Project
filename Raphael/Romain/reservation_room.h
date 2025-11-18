@@ -1,12 +1,15 @@
+
 #ifndef RESERVATION_ROOM_H
 #define RESERVATION_ROOM_H
 
-#define MAX_SIZE 100
+#include "includes.h"
 
 typedef struct {
 	int day;
 	int month;
 	int year;
+	int hour;
+	int minute;
 } Date;
 
 typedef struct {
