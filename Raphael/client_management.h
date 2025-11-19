@@ -1,4 +1,3 @@
-
 #ifndef CLIENT_MANAGEMENT_H
 #define CLIENT_MANAGEMENT_H
 
@@ -17,6 +16,7 @@ typedef struct
 // Variables globales pour la gestion dynamique
 extern client_user *clients;
 extern int client_count;
+extern char current_user_email[MAX_SIZE];
 
 // Prototypes pour la gestion dynamique
 void load_clients();

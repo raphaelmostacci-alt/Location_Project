@@ -24,6 +24,7 @@ typedef struct {
 // Dynamic reservation array and count
 extern ReservationRoom *reservations;
 extern int reservation_count;
+extern char current_user_email[MAX_SIZE];
 
 // Reservation management function prototypes
 void show_available_room();
