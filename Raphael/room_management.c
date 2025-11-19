@@ -2,6 +2,9 @@
 #include "room_management.h"
 #include "useful_fonction.h"
 #include "reservation_room.h"
+#include "mutual_load.h"
+#include "mutual_save.h"
+#include "mutual_free.h"
 
 // Dynamic array for rooms
 room_user *rooms = NULL;
@@ -9,26 +12,12 @@ int room_count = 0;
 
 // Load rooms from file
 void load_rooms() {
-    FILE *f = fopen("rooms.dat", "rb");
-    if (!f) return;
-    room_user temp;
-    room_count = 0;
-    rooms = NULL;
-    while (fread(&temp, sizeof(room_user), 1, f) == 1) {
-        rooms = realloc(rooms, (room_count + 1) * sizeof(room_user));
-        rooms[room_count++] = temp;
-    }
-    fclose(f);
+    rooms = (room_user*)mutual_load("rooms.dat", sizeof(room_user), &room_count);
 }
 
 // Save rooms to file
 void save_rooms() {
-    FILE *f = fopen("rooms.dat", "wb");
-    if (!f) return;
-    for (int i = 0; i < room_count; i++) {
-        fwrite(&rooms[i], sizeof(room_user), 1, f);
-    }
-    fclose(f);
+    mutual_save("rooms.dat", rooms, sizeof(room_user), room_count);
 }
 
 // Add a room
@@ -40,7 +29,7 @@ void add_room_dynamic(room_user new_room) {
 
 // Free room memory
 void free_rooms() {
-    free(rooms);
+    mutual_free(rooms);
     rooms = NULL;
     room_count = 0;
 }

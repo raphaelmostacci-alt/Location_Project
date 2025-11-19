@@ -3,6 +3,9 @@
 #include "client_management.h"
 #include "useful_fonction.h"
 #include "reservation_room.h"
+#include "mutual_load.h"
+#include "mutual_save.h"
+#include "mutual_free.h"
 
 // Edit a client by last name and first name
 void edit_client() {
@@ -208,35 +211,20 @@ client_user *clients = NULL;
 int client_count = 0;
 
 // Load clients from file
-void load_clients() 
-{
-    FILE *f = fopen("clients.dat", "rb");
-    if (!f) return;
-    client_user temp;
-    client_count = 0;
-    clients = NULL;
-    while (fread(&temp, sizeof(client_user), 1, f) == 1) {
-        clients = realloc(clients, (client_count + 1) * sizeof(client_user));
-        clients[client_count++] = temp;
-    }
-    fclose(f);
+void load_clients() {
+    clients = (client_user*)mutual_load("clients.dat", sizeof(client_user), &client_count);
 }
 
 
 
 // Save clients to file
 void save_clients() {
-    FILE *f = fopen("clients.dat", "wb");
-    if (!f) return;
-    for (int i = 0; i < client_count; i++) {
-        fwrite(&clients[i], sizeof(client_user), 1, f);
-    }
-    fclose(f);
+    mutual_save("clients.dat", clients, sizeof(client_user), client_count);
 }
 
 // Free memory for clients
 void free_clients() {
-    free(clients);
+    mutual_free(clients);
     clients = NULL;
     client_count = 0;
 }

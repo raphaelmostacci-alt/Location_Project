@@ -3,6 +3,9 @@
 #include "reservation_room.h"
 #include "useful_fonction.h"
 #include "room_management.h"
+#include "mutual_load.h"
+#include "mutual_save.h"
+#include "mutual_free.h"
 
 
 // Dynamic array for reservations
@@ -35,26 +38,12 @@ void invalidate_reservations_by_room(int room_id) {
 
 // Load reservations from file
 void load_reservations() {
-    FILE *f = fopen("reservations.dat", "rb");
-    if (!f) return;
-    ReservationRoom temp;
-    reservation_count = 0;
-    reservations = NULL;
-    while (fread(&temp, sizeof(ReservationRoom), 1, f) == 1) {
-        reservations = realloc(reservations, (reservation_count + 1) * sizeof(ReservationRoom));
-        reservations[reservation_count++] = temp;
-    }
-    fclose(f);
+    reservations = (ReservationRoom*)mutual_load("reservations.dat", sizeof(ReservationRoom), &reservation_count);
 }
 
 // Save reservations to file
 void save_reservations() {
-    FILE *f = fopen("reservations.dat", "wb");
-    if (!f) return;
-    for (int i = 0; i < reservation_count; i++) {
-        fwrite(&reservations[i], sizeof(ReservationRoom), 1, f);
-    }
-    fclose(f);
+    mutual_save("reservations.dat", reservations, sizeof(ReservationRoom), reservation_count);
 }
 
 // Add a reservation
@@ -66,7 +55,7 @@ void add_reservation(ReservationRoom new_res) {
 
 // Free reservation memory
 void free_reservations() {
-    free(reservations);
+    mutual_free(reservations);
     reservations = NULL;
     reservation_count = 0;
 }
