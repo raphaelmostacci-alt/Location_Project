@@ -41,7 +41,8 @@ void account_authentification()
 
         int user_exists = search_client(last_name, first_name);
         int is_admin = ((strcmp(last_name, "BLACHERE") == 0 && strcmp(first_name, "Romain") == 0) ||
-                        (strcmp(last_name, "MOSTACCI") == 0 && strcmp(first_name, "Raphael") == 0));
+                (strcmp(last_name, "MOSTACCI") == 0 && strcmp(first_name, "Raphael") == 0) ||
+                (strcmp(last_name, "PIALLAT") == 0 && strcmp(first_name, "Magali") == 0));
 
         if (user_exists)
         {
