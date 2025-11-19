@@ -38,4 +38,3 @@ void administrator_menu()
 		}
 	}
 }
-// Fonctions pour le menu administrateur
