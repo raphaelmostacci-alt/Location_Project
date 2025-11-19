@@ -3,47 +3,35 @@
 #include "client_management.h"
 #include "useful_fonction.h"
 #include "reservation_room.h"
-#include "mutual_load.h"
-#include "mutual_save.h"
-#include "mutual_free.h"
+#include "useful_mutual.h"
 
 // Edit a client by last name and first name
 void edit_client() {
     char last_name[MAX_SIZE];
     char first_name[MAX_SIZE];
-    printf("Enter client last name to edit: ");
-    fgets(last_name, MAX_SIZE, stdin);
-    last_name[strcspn(last_name, "\n")] = '\0';
-    printf("Enter client first name to edit: ");
-    fgets(first_name, MAX_SIZE, stdin);
-    first_name[strcspn(first_name, "\n")] = '\0';
+    read_string("Enter client last name to edit: ", last_name, MAX_SIZE);
+    read_string("Enter client first name to edit: ", first_name, MAX_SIZE);
     int found = 0;
     for (int i = 0; i < client_count; i++) {
         if (strcmp(clients[i].last_name, last_name) == 0 && strcmp(clients[i].first_name, first_name) == 0 && clients[i].available) {
             found = 1;
             printf("Editing client: %s %s\nCurrent email: %s\n", clients[i].last_name, clients[i].first_name, clients[i].mail);
-            printf("New last name (leave empty to keep current): ");
             char new_last[MAX_SIZE];
-            fgets(new_last, MAX_SIZE, stdin);
-            new_last[strcspn(new_last, "\n")] = '\0';
+            read_string("New last name (leave empty to keep current): ", new_last, MAX_SIZE);
             if (strlen(new_last) > 0) strncpy(clients[i].last_name, new_last, MAX_SIZE);
-            printf("New first name (leave empty to keep current): ");
             char new_first[MAX_SIZE];
-            fgets(new_first, MAX_SIZE, stdin);
-            new_first[strcspn(new_first, "\n")] = '\0';
+            read_string("New first name (leave empty to keep current): ", new_first, MAX_SIZE);
             if (strlen(new_first) > 0) strncpy(clients[i].first_name, new_first, MAX_SIZE);
-            printf("New email (leave empty to keep current): ");
             char new_mail[MAX_SIZE];
-            fgets(new_mail, MAX_SIZE, stdin);
-            new_mail[strcspn(new_mail, "\n")] = '\0';
+            read_string("New email (leave empty to keep current): ", new_mail, MAX_SIZE);
             if (strlen(new_mail) > 0) strncpy(clients[i].mail, new_mail, MAX_SIZE);
             save_clients();
-            printf("[SUCCESS] Client updated successfully!\n");
+            print_success("Client updated successfully!");
             return;
         }
     }
     if (!found) {
-        printf("[ERROR] Client not found for editing.\n");
+        print_error("Client not found for editing.");
     }
 }
 
@@ -51,24 +39,20 @@ void edit_client() {
 void delete_client() {
     char last_name[MAX_SIZE];
     char first_name[MAX_SIZE];
-    printf("Enter client last name to delete: ");
-    fgets(last_name, MAX_SIZE, stdin);
-    last_name[strcspn(last_name, "\n")] = '\0';
-    printf("Enter client first name to delete: ");
-    fgets(first_name, MAX_SIZE, stdin);
-    first_name[strcspn(first_name, "\n")] = '\0';
+    read_string("Enter client last name to delete: ", last_name, MAX_SIZE);
+    read_string("Enter client first name to delete: ", first_name, MAX_SIZE);
     int found = 0;
     for (int i = 0; i < client_count; i++) {
         if (strcmp(clients[i].last_name, last_name) == 0 && strcmp(clients[i].first_name, first_name) == 0 && clients[i].available) {
             clients[i].available = 0;
             save_clients();
-            printf("[SUCCESS] Client deactivated (logical delete).\n");
+            print_success("Client deactivated (logical delete).");
             found = 1;
             return;
         }
     }
     if (!found) {
-        printf("[ERROR] Client not found for deletion.\n");
+        print_error("Client not found for deletion.");
     }
 }
 
@@ -83,10 +67,7 @@ void client_management_menu() {
         printf("3. Add a client\n");
         printf("8. Return to previous menu\n");
         printf("9. Exit Application\n");
-        printf("Choose an option: ");
-        int choice = 0;
-        scanf("%d", &choice);
-        getchar();
+        int choice = read_int("Choose an option: ");
         switch (choice) {
             case 1:
                 show_all_clients();
@@ -94,12 +75,8 @@ void client_management_menu() {
             case 2: {
                 char last_name[MAX_SIZE];
                 char first_name[MAX_SIZE];
-                printf("Enter client last name: ");
-                fgets(last_name, MAX_SIZE, stdin);
-                last_name[strcspn(last_name, "\n")] = '\0';
-                printf("Enter client first name: ");
-                fgets(first_name, MAX_SIZE, stdin);
-                first_name[strcspn(first_name, "\n")] = '\0';
+                read_string("Enter client last name: ", last_name, MAX_SIZE);
+                read_string("Enter client first name: ", first_name, MAX_SIZE);
                 int found = -1;
                 for (int i = 0; i < client_count; i++) {
                     if (strcmp(clients[i].last_name, last_name) == 0 && strcmp(clients[i].first_name, first_name) == 0) {
@@ -109,13 +86,13 @@ void client_management_menu() {
                         printf("First name: %s\n", clients[i].first_name);
                         printf("Email: %s\n", clients[i].mail);
                         if (!clients[i].available) {
-                            printf("[INFO] This client is DEACTIVATED (unavailable).\n");
+                            print_error("This client is DEACTIVATED (unavailable).");
                         }
                         break;
                     }
                 }
                 if (found == -1) {
-                    printf("[ERROR] Client not found in the database.\n");
+                    print_error("Client not found in the database.");
                 } else {
                     int sub_quit = 0;
                     while (!sub_quit) {
@@ -125,39 +102,30 @@ void client_management_menu() {
                         printf("3. Show rooms reserved by this client\n");
                         printf("8. Return to previous menu\n");
                         printf("9. Exit Application\n");
-                        printf("Choose an option: ");
-                        int sub_choice = 0;
-                        scanf("%d", &sub_choice);
-                        getchar();
+                        int sub_choice = read_int("Choose an option: ");
                         switch (sub_choice) {
                             case 1:
                                 printf("Editing client...\n");
-                                printf("New last name (leave empty to keep current): ");
                                 char new_last[MAX_SIZE];
-                                fgets(new_last, MAX_SIZE, stdin);
-                                new_last[strcspn(new_last, "\n")] = '\0';
+                                read_string("New last name (leave empty to keep current): ", new_last, MAX_SIZE);
                                 if (strlen(new_last) > 0) strncpy(clients[found].last_name, new_last, MAX_SIZE);
-                                printf("New first name (leave empty to keep current): ");
                                 char new_first[MAX_SIZE];
-                                fgets(new_first, MAX_SIZE, stdin);
-                                new_first[strcspn(new_first, "\n")] = '\0';
+                                read_string("New first name (leave empty to keep current): ", new_first, MAX_SIZE);
                                 if (strlen(new_first) > 0) strncpy(clients[found].first_name, new_first, MAX_SIZE);
-                                printf("New email (leave empty to keep current): ");
                                 char new_mail[MAX_SIZE];
-                                fgets(new_mail, MAX_SIZE, stdin);
-                                new_mail[strcspn(new_mail, "\n")] = '\0';
+                                read_string("New email (leave empty to keep current): ", new_mail, MAX_SIZE);
                                 if (strlen(new_mail) > 0) strncpy(clients[found].mail, new_mail, MAX_SIZE);
                                 save_clients();
-                                printf("[SUCCESS] Client updated successfully!\n");
+                                print_success("Client updated successfully!");
                                 break;
                             case 2:
                                 if (clients[found].available) {
                                     clients[found].available = 0;
                                     save_clients();
                                     invalidate_reservations_by_client(clients[found].mail);
-                                    printf("[SUCCESS] Client deactivated (logical delete) and reservations released.\n");
+                                    print_success("Client deactivated (logical delete) and reservations released.");
                                 } else {
-                                    printf("[INFO] Client is already deactivated.\n");
+                                    print_error("Client is already deactivated.");
                                 }
                                 break;
                             case 3: {
@@ -175,7 +143,7 @@ void client_management_menu() {
                                 exit_application();
                                 return;
                             default:
-                                printf("Invalid option. Try again.\n");
+                                print_error("Invalid option. Try again.");
                                 break;
                         }
                     }
@@ -197,14 +165,12 @@ void client_management_menu() {
                 exit_application();
                 break;
             default:
-                printf("Invalid option. Please try again.\n");
+                print_error("Invalid option. Please try again.");
                 break;
         }
     }
     free_clients();
 }
-
-
 
 // Dynamic array for clients
 client_user *clients = NULL;
@@ -246,7 +212,7 @@ void show_all_clients() {
         }
     }
     if (count == 0) {
-        printf("[INFO] No clients found in the database.\n");
+        print_error("No clients found in the database.");
     }
 }
 
@@ -265,30 +231,24 @@ int search_client(const char *last_name, const char *first_name) {
 void add_client() {
     client_user new_client;
     printf("\n--- Add a new client ---\n");
-    printf("Last name: ");
-    fgets(new_client.last_name, MAX_SIZE, stdin);
-    new_client.last_name[strcspn(new_client.last_name, "\n")] = '\0';
-    printf("First name: ");
-    fgets(new_client.first_name, MAX_SIZE, stdin);
-    new_client.first_name[strcspn(new_client.first_name, "\n")] = '\0';
-    printf("Email: ");
-    fgets(new_client.mail, MAX_SIZE, stdin);
-    new_client.mail[strcspn(new_client.mail, "\n")] = '\0';
-    if(strlen(new_client.last_name) == 0 || strlen(new_client.first_name) == 0 || strlen(new_client.mail) == 0) {
-        printf("[ERROR] All fields must be filled.\n");
+    read_string("Last name: ", new_client.last_name, MAX_SIZE);
+    read_string("First name: ", new_client.first_name, MAX_SIZE);
+    read_string("Email: ", new_client.mail, MAX_SIZE);
+    if(is_empty(new_client.last_name) || is_empty(new_client.first_name) || is_empty(new_client.mail)) {
+        print_error("All fields must be filled.");
         return;
     }
     // Check if the client already exists
     for (int i = 0; i < client_count; i++) {
         if (strcmp(clients[i].last_name, new_client.last_name) == 0 && strcmp(clients[i].first_name, new_client.first_name) == 0) {
             if (clients[i].available) {
-                printf("[ERROR] A client with this name already exists and is active. Client not added.\n");
+                print_error("A client with this name already exists and is active. Client not added.");
                 return;
             } else {
                 clients[i].available = 1;
                 strncpy(clients[i].mail, new_client.mail, MAX_SIZE);
                 save_clients();
-                printf("[SUCCESS] Old deactivated client reactivated and updated!\n");
+                print_success("Old deactivated client reactivated and updated!");
                 return;
             }
         }
@@ -297,7 +257,7 @@ void add_client() {
     clients = realloc(clients, (client_count + 1) * sizeof(client_user));
     clients[client_count++] = new_client;
     save_clients();
-    printf("[SUCCESS] Client added successfully!\n");
+    print_success("Client added successfully!");
 }
 
 // Show all rooms reserved by a specific client (with room name, date, time, only active reservations)
@@ -323,7 +283,7 @@ void show_rooms_reserved_by_client(const char *client_mail) {
         }
     }
     if (count == 0) {
-        printf("No reservations found for this client.\n");
+        print_error("No reservations found for this client.");
     }
     free_reservations();
     return_menu();

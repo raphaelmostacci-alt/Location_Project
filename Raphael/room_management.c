@@ -2,9 +2,7 @@
 #include "room_management.h"
 #include "useful_fonction.h"
 #include "reservation_room.h"
-#include "mutual_load.h"
-#include "mutual_save.h"
-#include "mutual_free.h"
+#include "useful_mutual.h"
 
 // Dynamic array for rooms
 room_user *rooms = NULL;
@@ -34,7 +32,6 @@ void free_rooms() {
     room_count = 0;
 }
 
-
 // Make a room unavailable (logical delete)
 void delete_room(room_user *room) {
     int found = 0;
@@ -43,13 +40,13 @@ void delete_room(room_user *room) {
             rooms[i].available = 0;
             invalidate_reservations_by_room(room->id);
             save_rooms();
-            printf("[SUCCESS] Room ID %d is now unavailable.\n", room->id);
+            print_success("Room is now unavailable.");
             found = 1;
             break;
         }
     }
     if (!found) {
-        printf("[ERROR] Room not found for logical deletion.\n");
+        print_error("Room not found for logical deletion.");
     }
 }
 
@@ -60,38 +57,26 @@ void edit_room_by_id(int id) {
         if (rooms[i].id == id) {
             found = 1;
             printf("Editing room: %d\nCurrent name: %s\nCurrent capacity: %d\nCurrent available: %s\n", rooms[i].id, rooms[i].name, rooms[i].capacity, rooms[i].available ? "Yes" : "No");
-            printf("New name (leave empty to keep current): ");
             char new_name[ROOM_NAME_SIZE];
-            fgets(new_name, ROOM_NAME_SIZE, stdin);
-            size_t len = strlen(new_name);
-            if (len > 0 && new_name[len - 1] == '\n') new_name[len - 1] = '\0';
+            read_string("New name (leave empty to keep current): ", new_name, ROOM_NAME_SIZE);
             if (strlen(new_name) > 0) strncpy(rooms[i].name, new_name, ROOM_NAME_SIZE);
-            printf("New capacity (enter -1 to keep current): ");
-            int new_capacity;
-            scanf("%d", &new_capacity);
-            getchar();
+            int new_capacity = read_int("New capacity (enter -1 to keep current): ");
             if (new_capacity != -1) rooms[i].capacity = new_capacity;
-            printf("Available? (1 = Yes, 0 = No, -1 to keep current): ");
-            int new_available;
-            scanf("%d", &new_available);
-            getchar();
+            int new_available = read_int("Available? (1 = Yes, 0 = No, -1 to keep current): ");
             if (new_available == 0 || new_available == 1) rooms[i].available = new_available;
             save_rooms();
-            printf("[SUCCESS] Room updated successfully!\n");
+            print_success("Room updated successfully!");
             break;
         }
     }
     if (!found) {
-        printf("[ERROR] Room with ID %d not found for editing.\n", id);
+        print_error("Room not found for editing.");
     }
 }
 
 // Search for a room by ID and display its info
 void search_room() {
-    int id;
-    printf("Enter the room ID to search: ");
-    scanf("%d", &id);
-    getchar();
+    int id = read_int("Enter the room ID to search: ");
     int found = 0;
     for (int i = 0; i < room_count; i++) {
         if (rooms[i].id == id) {
@@ -105,10 +90,7 @@ void search_room() {
                 printf("2. Make room unavailable\n");
                 printf("8. Return to previous menu\n");
                 printf("9. Exit Application\n");
-                printf("Choose an option: ");
-                int sub_choice = 0;
-                scanf("%d", &sub_choice);
-                getchar();
+                int sub_choice = read_int("Choose an option: ");
                 switch (sub_choice) {
                     case 1:
                         edit_room(&rooms[i]);
@@ -120,7 +102,7 @@ void search_room() {
                         break;
                     case 8:
                         sub_quit = 1;
-                        printf("Returning to previous menu.\n");
+                        print_success("Returning to previous menu.");
                         break;
                     case 9:
                         free_rooms();
@@ -135,7 +117,7 @@ void search_room() {
         }
     }
     if (!found) {
-        printf("[ERROR] Room not found in database.\n");
+        print_error("Room not found in database.");
     }
 }
 
@@ -144,30 +126,24 @@ void edit_room(room_user *room) {
     printf("\n--- Edit Room ---\n");
     char old_name[ROOM_NAME_SIZE];
     strncpy(old_name, room->name, ROOM_NAME_SIZE);
-
-    printf("Current name: %s\nEnter new name (leave empty to keep current): ", room->name);
+    printf("Current name: %s\n", room->name);
     char buffer[ROOM_NAME_SIZE];
-    fgets(buffer, ROOM_NAME_SIZE, stdin);
-    buffer[strcspn(buffer, "\n")] = '\0';
+    read_string("Enter new name (leave empty to keep current): ", buffer, ROOM_NAME_SIZE);
     if (strlen(buffer) > 0) {
         strncpy(room->name, buffer, ROOM_NAME_SIZE);
     }
-    printf("Current capacity: %d\nEnter new capacity (-1 to keep current): ", room->capacity);
-    int new_capacity;
-    scanf("%d", &new_capacity);
-    getchar();
+    printf("Current capacity: %d\n", room->capacity);
+    int new_capacity = read_int("Enter new capacity (-1 to keep current): ");
     if (new_capacity != -1) {
         room->capacity = new_capacity;
     }
-    printf("Current available: %s\nEnter new available (1 = Yes, 0 = No, -1 to keep current): ", room->available ? "Yes" : "No");
-    int new_available;
-    scanf("%d", &new_available);
-    getchar();
+    printf("Current available: %s\n", room->available ? "Yes" : "No");
+    int new_available = read_int("Enter new available (1 = Yes, 0 = No, -1 to keep current): ");
     if (new_available == 0 || new_available == 1) {
         room->available = new_available;
     }
     save_rooms();
-    printf("Room information updated successfully!\n");
+    print_success("Room information updated successfully!");
 }
 
 // Show all rooms in the database
@@ -178,7 +154,7 @@ void show_all_rooms() {
         printf("%d. ID: %d | Name: %s | Capacity: %d | Available: %s\n", ++count, rooms[i].id, rooms[i].name, rooms[i].capacity, rooms[i].available ? "Yes" : "No");
     }
     if (count == 0) {
-        printf("[INFO] No rooms found in the database.\n");
+        print_error("No rooms found in the database.");
     }
 }
 
@@ -186,19 +162,14 @@ void show_all_rooms() {
 void add_room() {
     room_user new_room;
     printf("\n--- Add a new room ---\n");
-    printf("Room ID: ");
-    scanf("%d", &new_room.id);
-    getchar();
-    printf("Room name: ");
-    fgets(new_room.name, ROOM_NAME_SIZE, stdin);
-    size_t len = strlen(new_room.name);
-    if (len > 0 && new_room.name[len - 1] == '\n') new_room.name[len - 1] = '\0';
-    printf("Room capacity: ");
-    scanf("%d", &new_room.capacity);
-    getchar();
-    printf("Available? (1 = Yes, 0 = No): ");
-    scanf("%d", &new_room.available);
-    getchar();
+    new_room.id = read_int("Room ID: ");
+    read_string("Room name: ", new_room.name, ROOM_NAME_SIZE);
+    new_room.capacity = read_int("Room capacity: ");
+    new_room.available = read_int("Available? (1 = Yes, 0 = No): ");
+    if (new_room.id < 0 || is_empty(new_room.name) || new_room.capacity < 0 || (new_room.available != 0 && new_room.available != 1)) {
+        print_error("All fields must be filled correctly.");
+        return;
+    }
     // Check for unique ID
     int id_exists = 0;
     for (int i = 0; i < room_count; i++) {
@@ -208,11 +179,11 @@ void add_room() {
         }
     }
     if (id_exists) {
-        printf("[ERROR] A room with this ID already exists. Room not added.\n");
+        print_error("A room with this ID already exists. Room not added.");
         return;
     }
     add_room_dynamic(new_room);
-    printf("[SUCCESS] Room added successfully!\n");
+    print_success("Room added successfully!");
 }
 
 void room_management_menu()
@@ -226,10 +197,7 @@ void room_management_menu()
         printf("3. Add room\n");
         printf("8. Return to previous menu\n");
         printf("9. Exit Application\n");
-        printf("Choose an option: ");
-        int choice = 0;
-        scanf("%d", &choice);
-        getchar();
+        int choice = read_int("Choose an option: ");
         switch (choice) {
             case 1:
                 show_all_rooms();
@@ -242,16 +210,16 @@ void room_management_menu()
                 break;
             case 8:
                 quit = 1;
-                printf("Returning to previous menu.\n");
+                print_success("Returning to previous menu.");
                 break;
             case 9:
                 quit = 1;
-                printf("Exiting room management menu.\n");
+                print_success("Exiting room management menu.");
                 free_rooms();
                 exit_application();
                 break;
             default:
-                printf("Invalid option. Try again.\n");
+                print_error("Invalid option. Try again.");
                 break;
         }
     }

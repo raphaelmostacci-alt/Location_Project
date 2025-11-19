@@ -3,9 +3,7 @@
 #include "reservation_room.h"
 #include "useful_fonction.h"
 #include "room_management.h"
-#include "mutual_load.h"
-#include "mutual_save.h"
-#include "mutual_free.h"
+#include "useful_mutual.h"
 
 
 // Dynamic array for reservations
@@ -107,7 +105,7 @@ void show_available_rooms_for_slot(int day, int month, int year, int hour) {
         }
     }
     if (!found) {
-        printf("No available rooms for this slot.\n");
+        print_error("No available rooms for this slot.");
     }
 }
 
@@ -122,10 +120,7 @@ void reservation_room_menu()
         printf("2. Book a reservation\n");
         printf("8. Return to previous menu\n");
         printf("9. Exit Application\n");
-        printf("Choose an option: ");
-        int choice = 0;
-        scanf("%d", &choice);
-        getchar();
+        int choice = read_int("Choose an option: ");
         switch (choice) {
             case 1:
                 show_room_locked_by_client();
@@ -143,7 +138,7 @@ void reservation_room_menu()
                 exit_application();
                 break;
             default:
-                printf("Invalid option. Try again.\n");
+                print_error("Invalid option. Try again.");
                 break;
         }
     }
@@ -166,7 +161,7 @@ void show_room_locked_by_client() {
         }
     }
     if (count == 0) {
-        printf("No reservations found for this user.\n");
+        print_error("No reservations found for this user.");
         free(indices);
         return_menu();
         return;
@@ -175,9 +170,7 @@ void show_room_locked_by_client() {
     printf("\nSelect a reservation (1-%d):\n", count);
     printf("8. Return to previous menu\n");
     printf("9. Exit application\n");
-    printf("Choose an option: ");
-    scanf("%d", &choice);
-    getchar();
+    choice = read_int("Choose an option: ");
     if (choice == 8) {
         free(indices);
         return_menu();
@@ -189,7 +182,7 @@ void show_room_locked_by_client() {
         return;
     }
     if (choice < 1 || choice > count) {
-        printf("Invalid selection.\n");
+        print_error("Invalid selection.");
         free(indices);
         return_menu();
         return;
@@ -202,10 +195,7 @@ void show_room_locked_by_client() {
         printf("2. Delete reservation\n");
         printf("8. Return to previous menu\n");
         printf("9. Exit Application\n");
-        printf("Choose an option: ");
-        int sub_choice = 0;
-        scanf("%d", &sub_choice);
-        getchar();
+        int sub_choice = read_int("Choose an option: ");
         switch (sub_choice) {
             case 1:
                 edit_reservation_id(reservations[idx].reservation_id);
@@ -224,7 +214,7 @@ void show_room_locked_by_client() {
                 exit_application();
                 return;
             default:
-                printf("Invalid option. Try again.\n");
+                print_error("Invalid option. Try again.");
                 break;
         }
     }
@@ -240,14 +230,14 @@ void edit_reservation_id(int reservation_id) {
             found = 1;
             printf("Current date: %02d/%02d/%04d %02d:%02d\n", reservations[i].date.day, reservations[i].date.month, reservations[i].date.year, reservations[i].date.hour, reservations[i].date.minute);
             printf("Enter new date (DD MM YYYY): ");
-            int new_day, new_month, new_year, new_hour, new_minute = 0;
-            scanf("%d %d %d", &new_day, &new_month, &new_year);
+            int new_day = read_int("");
+            int new_month = read_int("");
+            int new_year = read_int("");
             printf("Enter new time (HH MM): ");
-            scanf("%d %d", &new_hour, &new_minute);
+            int new_hour = read_int("");
+            int new_minute = read_int("");
             if (new_hour < 8 || new_hour > 11) {
-                printf("\n-----------------------------------\n");
-                printf("[ERREUR] L'heure doit être comprise entre 8h et 11h.\n");
-                printf("-----------------------------------\n");
+                print_error("Hour must be between 8am and 11am.");
                 break;
             }
             time_t now = time(NULL);
@@ -261,15 +251,11 @@ void edit_reservation_id(int reservation_id) {
             time_t input_time = mktime(&input_date);
             double diff_days = difftime(input_time, now) / (60 * 60 * 24);
             if (diff_days < 0) {
-                printf("\n-----------------------------------\n");
-                printf("[ERREUR] Impossible de réserver dans le passé.\n");
-                printf("-----------------------------------\n");
+                print_error("Cannot book in the past.");
                 break;
             }
             if (diff_days > 6.99) {
-                printf("\n-----------------------------------\n");
-                printf("[ERREUR] Impossible de réserver au-delà de 7 jours à partir d'aujourd'hui.\n");
-                printf("-----------------------------------\n");
+                print_error("Cannot book more than 7 days from today.");
                 break;
             }
             int slot_free = 1;
@@ -280,9 +266,7 @@ void edit_reservation_id(int reservation_id) {
                 }
             }
             if (!slot_free) {
-                printf("\n-----------------------------------\n");
-                printf("[ERREUR] Ce créneau est déjà réservé pour cette salle et cette date.\n");
-                printf("-----------------------------------\n");
+                print_error("This slot is already booked for this room and date.");
                 break;
             }
             reservations[i].date.day = new_day;
@@ -291,14 +275,12 @@ void edit_reservation_id(int reservation_id) {
             reservations[i].date.hour = new_hour;
             reservations[i].date.minute = new_minute;
             save_reservations();
-            printf("\n-----------------------------------\n");
-            printf("[SUCCÈS] Réservation modifiée !\n");
-            printf("-----------------------------------\n");
+            print_success("Reservation updated!");
             break;
         }
     }
     if (!found) {
-        printf("Reservation not found or already deleted.\n");
+        print_error("Reservation not found or already deleted.");
     }
 }
 
@@ -340,9 +322,7 @@ void book_reservation() {
     for (int i = 0; i < 3; i++) {
         printf("%d. %02d/%02d/%d\n", i+1, days[i], months[i], years[i]);
     }
-    int day_choice = 0;
-    scanf("%d", &day_choice);
-    getchar();
+    int day_choice = read_int("");
     if (day_choice < 1 || day_choice > 3) {
         printf("Invalid day selection.\n");
         return;
@@ -351,11 +331,8 @@ void book_reservation() {
     int month = months[day_choice-1];
     int year = years[day_choice-1];
 
-    // Only two slots: 8-10h and 10-12h
     printf("Select a time slot:\n1. 8h-10h\n2. 10h-12h\n");
-    int slot_choice = 0;
-    scanf("%d", &slot_choice);
-    getchar();
+    int slot_choice = read_int("");
     int hour = (slot_choice == 1) ? 8 : 10;
     if (slot_choice != 1 && slot_choice != 2) {
         printf("Invalid slot selection.\n");
@@ -366,10 +343,7 @@ void book_reservation() {
     show_available_rooms_for_slot(day, month, year, hour);
 
     // Select room
-    printf("Enter room ID: ");
-    int room_id;
-    scanf("%d", &room_id);
-    getchar();
+    int room_id = read_int("Enter room ID: ");
 
     // Check slot availability
     if (!is_slot_available(room_id, day, month, year, hour)) {
@@ -384,10 +358,7 @@ void book_reservation() {
     new_res.date.month = month;
     new_res.date.year = year;
     new_res.date.hour = hour;
-    // ...collect other info (client_mail, etc.)...
-    printf("Enter your email: ");
-    fgets(new_res.client_mail, MAX_SIZE, stdin);
-    new_res.client_mail[strcspn(new_res.client_mail, "\n")] = '\0';
+    read_string("Enter your email: ", new_res.client_mail, MAX_SIZE);
     // Generate reservation_id
     new_res.reservation_id = reservation_count + 1;
     add_reservation(new_res);

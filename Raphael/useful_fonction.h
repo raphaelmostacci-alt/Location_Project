@@ -22,4 +22,11 @@ ReservationRoom* load_reservations_util(int* out_count);
 void save_reservations_util(ReservationRoom* reservations, int count);
 void free_reservations_util(ReservationRoom* reservations);
 
+// Input utility functions
+void read_string(const char *prompt, char *buffer, int size);
+int read_int(const char *prompt);
+void print_error(const char *msg);
+void print_success(const char *msg);
+int is_empty(const char *str);
+
 #endif // USEFUL_FONCTION_H
