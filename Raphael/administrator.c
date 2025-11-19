@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include "includes.h"
 #include "client_management.h"
 #include "room_management.h"
+#include "useful_fonction.h"
 
 void administrator_menu() 
 {
@@ -10,8 +11,8 @@ void administrator_menu()
 		printf("\n==== Administrator Menu ====\n");
 		printf("1. Room Management\n");
 		printf("2. Client Management\n");
-		printf("3. Reservation Management\n");
-		printf("4. Exit\n");
+		printf("3. Room Reservation\n");
+		printf("9. Exit Application\n");
 		printf("Choose an option: ");
 		int choice = 0;
 		scanf("%d", &choice);
@@ -26,12 +27,11 @@ void administrator_menu()
 				client_management_menu();
 				break;
 			case 3:
-				// TODO: call reservation_room_menu();
-				printf("Reservation management selected.\n");
+				reservation_room_menu();
 				break;
-			case 4:
+			case 9:
+				exit_application();
 				quit = 1;
-				printf("Exiting administrator menu.\n");
 				break;
 			default:
 				printf("Invalid option. Try again.\n");
