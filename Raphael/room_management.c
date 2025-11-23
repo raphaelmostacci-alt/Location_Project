@@ -199,28 +199,12 @@ void room_management_menu()
         printf("9. Exit Application\n");
         int choice = read_int("Choose an option: ");
         switch (choice) {
-            case 1:
-                show_all_rooms();
-                break;
-            case 2:
-                search_room();
-                break;
-            case 3:
-                add_room();
-                break;
-            case 8:
-                quit = 1;
-                print_success("Returning to previous menu.");
-                break;
-            case 9:
-                quit = 1;
-                print_success("Exiting room management menu.");
-                free_rooms();
-                exit_application();
-                break;
-            default:
-                print_error("Invalid option. Try again.");
-                break;
+            case 1: show_all_rooms(); break;
+            case 2: search_room(); break;
+            case 3: add_room(); break;
+            case 8: quit = 1; print_success("Returning to previous menu."); break;
+            case 9: quit = 1; print_success("Exiting room management menu."); free_rooms(); exit_application(); break;
+            default: print_error("Invalid option. Try again."); break;
         }
     }
     free_rooms();

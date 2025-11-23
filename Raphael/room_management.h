@@ -1,6 +1,5 @@
 #ifndef ROOM_MANAGEMENT_H
 #define ROOM_MANAGEMENT_H
-
 #define ROOM_NAME_SIZE 100
 
 typedef struct room_user {
@@ -20,7 +19,6 @@ void save_rooms();
 void add_room_dynamic(room_user new_room);
 void free_rooms();
 
-
 // Room management function prototypes
 void show_all_rooms();
 void search_room();
@@ -28,7 +26,5 @@ void add_room();
 void edit_room(room_user *room); // Prototype matches implementation
 void delete_room(room_user *room); // Prototype matches implementation
 void room_management_menu();
-
-
 
 #endif // ROOM_MANAGEMENT_H

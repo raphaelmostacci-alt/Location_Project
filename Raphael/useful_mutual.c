@@ -33,4 +33,3 @@ void mutual_save(const char* filename, void* array, size_t type_size, int count)
     }
     fclose(f);
 }
-

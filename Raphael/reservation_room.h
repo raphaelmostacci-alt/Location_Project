@@ -1,8 +1,6 @@
-#include "includes.h" // Centralize MAX_SIZE and standard includes
+#include "includes.h"
 #ifndef RESERVATION_ROOM_H
 #define RESERVATION_ROOM_H
-
-
 
 typedef struct {
 	int day;
@@ -18,8 +16,6 @@ typedef struct {
 	int reservation_id;
 	Date date;
 } ReservationRoom;
-
-// Reservation management function prototypes
 
 // Dynamic reservation array and count
 extern ReservationRoom *reservations;

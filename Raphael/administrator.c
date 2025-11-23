@@ -3,11 +3,9 @@
 #include "room_management.h"
 #include "useful_fonction.h"
 
-void administrator_menu() 
-{
+void administrator_menu() {
 	int quit = 0;
-	while (!quit) 
-    {
+	while (!quit) {
 		printf("\n==== Administrator Menu ====\n");
 		printf("1. Room Management\n");
 		printf("2. Client Management\n");
@@ -17,24 +15,12 @@ void administrator_menu()
 		int choice = 0;
 		scanf("%d", &choice);
 		getchar(); // consume newline
-		switch (choice) 
-        {
-			case 1:
-				room_management_menu();
-				break;
-			case 2:
-				printf("Client management selected.\n");
-				client_management_menu();
-				break;
-			case 3:
-				reservation_room_menu();
-				break;
-			case 9:
-				exit_application();
-				quit = 1;
-				break;
-			default:
-				printf("Invalid option. Try again.\n");
-		}
+	        switch (choice) {
+	            case 1: room_management_menu(); break;
+	            case 2: printf("Client management selected.\n"); client_management_menu(); break;
+	            case 3: reservation_room_menu(); break;
+	            case 9: exit_application(); quit = 1; break;
+	            default: printf("Invalid option. Try again.\n"); break;
+	        }
 	}
 }

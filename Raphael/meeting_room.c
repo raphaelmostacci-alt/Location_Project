@@ -5,20 +5,16 @@
 
 void account_authentification();
 
-int main()
-{
+int main() {
     load_clients();
     account_authentification();
     exit_application();
 }
 
-
-void account_authentification()
-{
+void account_authentification() {
     int authenticated = 0;
     int quit = 0;
-    while (!authenticated && !quit)
-    {
+    while (!authenticated && !quit) {
     char last_name[MAX_SIZE];
     char first_name[MAX_SIZE];
 
@@ -26,16 +22,14 @@ void account_authentification()
             printf("Enter your last name (or type EXIT to quit): ");
         fgets(last_name, 50, stdin);
         last_name[strcspn(last_name, "\n")] = 0;
-            if (strcmp(last_name, "EXIT") == 0)
-            {
+            if (strcmp(last_name, "EXIT") == 0) {
                 exit_application();
             }
 
             printf("Enter your first name (or type EXIT to quit): ");
         fgets(first_name, 50, stdin);
         first_name[strcspn(first_name, "\n")] = 0;
-            if (strcmp(first_name, "EXIT") == 0)
-            {
+            if (strcmp(first_name, "EXIT") == 0) {
                 exit_application();
             }
 
@@ -44,16 +38,12 @@ void account_authentification()
                 (strcmp(last_name, "MOSTACCI") == 0 && strcmp(first_name, "Raphael") == 0) ||
                 (strcmp(last_name, "PIALLAT") == 0 && strcmp(first_name, "Magali") == 0));
 
-        if (user_exists)
-        {
+        if (user_exists) {
             printf("Welcome, %s %s!\n", first_name, last_name);
-            if (is_admin) 
-            {
+            if (is_admin) {
                 printf("You are an administrator.\n");
                 administrator_menu();
-            } 
-            else 
-            {
+            } else {
                 printf("You are a regular user.\n");
                 // Set current user email for reservation module
                 for (int i = 0; i < client_count; i++) {
@@ -65,26 +55,21 @@ void account_authentification()
                 }
                 reservation_room_menu();
             }
-        }
-        else
-        {
+        } else {
             printf("Account not found.\n");
             printf("1. Create a new account\n2. Try again\n3. Exit Application\nChoose an option: ");
             int choice = 0;
             scanf("%d", &choice);
             getchar(); // consume newline
-            if (choice == 1)
-            {
+            if (choice == 1) {
                 int before = search_client(last_name, first_name);
                 add_client();
                 int after = search_client(last_name, first_name);
-                if (!before && after)
-                {
+                if (!before && after) {
                     printf("Account created. Please login again.\n");
                 }
             }
-            else if (choice == 3)
-            {
+            else if (choice == 3) {
                 exit_application();
             }
         }

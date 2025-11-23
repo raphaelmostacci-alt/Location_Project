@@ -69,9 +69,7 @@ void client_management_menu() {
         printf("9. Exit Application\n");
         int choice = read_int("Choose an option: ");
         switch (choice) {
-            case 1:
-                show_all_clients();
-                break;
+            case 1: show_all_clients(); break;
             case 2: {
                 char last_name[MAX_SIZE];
                 char first_name[MAX_SIZE];
@@ -150,23 +148,10 @@ void client_management_menu() {
                 }
                 break;
             }
-            case 3:
-                add_client();
-                break;
-            case 8:
-                quit = 1;
-                printf("Returning to previous menu.\n");
-                return_menu();
-                break;
-            case 9:
-                quit = 1;
-                printf("Exiting client management menu.\n");
-                free_clients();
-                exit_application();
-                break;
-            default:
-                print_error("Invalid option. Please try again.");
-                break;
+            case 3: add_client(); break;
+            case 8: quit = 1; printf("Returning to previous menu.\n"); return_menu(); break;
+            case 9: quit = 1; printf("Exiting client management menu.\n"); free_clients(); exit_application(); break;
+            default: print_error("Invalid option. Please try again."); break;
         }
     }
     free_clients();
@@ -180,8 +165,6 @@ int client_count = 0;
 void load_clients() {
     clients = (client_user*)mutual_load("clients.dat", sizeof(client_user), &client_count);
 }
-
-
 
 // Save clients to file
 void save_clients() {
@@ -225,7 +208,6 @@ int search_client(const char *last_name, const char *first_name) {
     }
     return 0;
 }
-
 
 // Add a new client
 void add_client() {

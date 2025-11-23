@@ -1,10 +1,8 @@
-// Functions for reservation management
 #include "includes.h"
 #include "reservation_room.h"
 #include "useful_fonction.h"
 #include "room_management.h"
 #include "useful_mutual.h"
-
 
 // Dynamic array for reservations
 ReservationRoom *reservations = NULL;
@@ -110,8 +108,7 @@ void show_available_rooms_for_slot(int day, int month, int year, int hour) {
 }
 
 // Main reservation menu (harmonized)
-void reservation_room_menu() 
-{
+void reservation_room_menu() {
     int quit = 0;
     load_reservations();
     while (!quit) {
@@ -122,24 +119,11 @@ void reservation_room_menu()
         printf("9. Exit Application\n");
         int choice = read_int("Choose an option: ");
         switch (choice) {
-            case 1:
-                show_room_locked_by_client();
-                break;
-            case 2:
-                book_reservation();
-                break;
-            case 8:
-                free_reservations();
-                return_menu();
-                quit = 1;
-                break;
-            case 9:
-                free_reservations();
-                exit_application();
-                break;
-            default:
-                print_error("Invalid option. Try again.");
-                break;
+            case 1: show_room_locked_by_client(); break;
+            case 2: book_reservation(); break;
+            case 8: free_reservations(); return_menu(); quit = 1; break;
+            case 9: free_reservations(); exit_application(); break;
+            default: print_error("Invalid option. Try again."); break;
         }
     }
 }
@@ -364,4 +348,3 @@ void book_reservation() {
     add_reservation(new_res);
     printf("Reservation successful!\n");
 }
-

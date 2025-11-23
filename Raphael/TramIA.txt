@@ -1,73 +1,104 @@
 
+
 TRAME DU PROJET “meeting-room” (C)
 
 Mise à jour continue
 -------------------
 Toute modification de structure, d’inclusion, de logique ou de pratique doit être reportée ici pour garder la trame à jour et cohérente avec l’état réel du projet.
 
-1. Organisation des fichiers
+## Présentation générale
+
+Ce projet est un logiciel en C permettant de gérer la réservation de salles de réunion. Il propose une interface en ligne de commande pour :
+- Gérer les clients (ajout, modification, suppression logique, recherche),
+- Gérer les salles (ajout, modification, suppression logique, recherche),
+- Gérer les réservations (création, modification, suppression, affichage des créneaux disponibles, respect des règles métier : réservation uniquement sur les 7 prochains jours, en semaine, de 8h à 12h).
+
+
+### Choix techniques et fonctions principales utilisées
+
+- **Allocation dynamique de la mémoire** : toutes les listes (clients, salles, réservations) sont gérées avec des tableaux dynamiques, grâce à l’utilisation de `malloc`, `realloc`, mais aussi de fonctions mutualisées comme `mutual_load`, `mutual_save`, `mutual_free` pour centraliser la gestion mémoire et la persistance.
+- **Suppression logique** : au lieu de supprimer physiquement un client ou une salle, nous utilisons un flag de disponibilité (`available`). Cela permet de conserver l’historique et d’éviter les problèmes d’indexation ou de pointeurs invalides.
+- **Gestion des fichiers** : les données sont sauvegardées et chargées depuis des fichiers binaires via les fonctions mutualisées (`mutual_load`, `mutual_save`), ce qui assure la persistance des informations entre deux utilisations du programme.
+- **Menus harmonisés** : l’interface utilisateur est structurée en menus clairs et homogènes, facilitant la navigation et l’utilisation.
+- **Gestion des dates et heures** : nous utilisons la bibliothèque standard `<time.h>` pour manipuler les dates, vérifier les contraintes (créneaux horaires, jours de la semaine, réservation sur 7 jours maximum).
+- **Utilisation de fonctions utilitaires** : pour centraliser les actions courantes (retour au menu, sortie propre du programme, etc.), nous avons créé des fonctions utilitaires dédiées (`exit_application`, `return_menu`, `print_success`, `print_error`, etc.).
+- **Lecture sécurisée des entrées** : toutes les saisies utilisateur sont faites via des fonctions robustes comme `read_string` et `read_int` pour éviter les débordements et erreurs de saisie.
+- **Cohérence des données** : la suppression logique d’un client ou d’une salle invalide automatiquement les réservations associées.
+- **Vérifications métier** : toute réservation ne peut se faire que sur les 7 prochains jours, uniquement du lundi au vendredi, et sur les créneaux horaires 8h-12h. Toute tentative hors de ces règles est bloquée.
+
+### Pourquoi ces choix ?
+
+- L’allocation dynamique permet de gérer un nombre variable d’éléments sans limitation arbitraire, et d’optimiser l’utilisation de la mémoire.
+- La suppression logique évite les bugs liés à la suppression physique et permet de désactiver temporairement des entités.
+- La gestion par fichiers binaires est rapide et fiable pour stocker des structures complexes.
+- Les menus harmonisés et les fonctions utilitaires améliorent l’expérience utilisateur et la maintenabilité du code.
+- Les vérifications sur les dates garantissent le respect des règles métier et évitent les incohérences dans les réservations.
+
+## 1. Organisation des fichiers
 ---------------------------
 
-- includes.h
+- **includes.h**
     * Centralise tous les #include des bibliothèques standards (stdio.h, stdlib.h, string.h, etc.)
     * À inclure dans tous les fichiers .c et .h du projet pour simplifier et uniformiser les imports
     * Permet de ne pas répéter les includes standards dans chaque module
 
-- client_management.h / .c
+
+- **client_management.h / .c**
     * Structure : client_user (last_name, first_name, mail, available)
     * Suppression logique : le champ available passe à 0 (désactivé), jamais de suppression physique
     * Affichage : clients désactivés affichés en haut
-    * Fonctions : show_all_clients, search_client, add_client, edit_client, delete_client, client_management_menu
+    * Fonctions : show_all_clients, search_client, add_client, edit_client, delete_client, client_management_menu, show_rooms_reserved_by_client
+    * Utilisation de `read_string`, `read_int`, `print_success`, `print_error` pour toutes les interactions
     * Prototypes dans le .h, implémentations dans le .c
 
-- room_management.h / .c
+
+- **room_management.h / .c**
     * Structure : room_user (id, name, capacity, available)
     * Suppression logique : available = 0 (indisponible), jamais de suppression physique
-    * Fonctions : show_all_rooms, add_room, edit_room, delete_room, room_management_menu
+    * Fonctions : show_all_rooms, add_room, edit_room, delete_room, room_management_menu, search_room
+    * Utilisation de `read_string`, `read_int`, `print_success`, `print_error` pour toutes les interactions
     * Prototypes dans le .h, implémentations dans le .c
 
-- reservation_room.h / .c (à intégrer)
-    * Structure : reservation_room (client mail, room id, reservation id, date)
-    * Structure de date (dans ce .h ou un .h commun si besoin ailleurs)
-    * Fonctions : show_available_room, show_room_locked_by_client, book_reservation, edit_reservation, delete_reservation, reservation_room_menu
-    * Prototypes dans le .h, implémentations dans le .c
 
-- administrator.h / .c
+- **reservation_room.h / .c**
+    * Structure : ReservationRoom (client_mail, room_id, reservation_id, date)
+    * Structure de date (Date)
+    * Fonctions : show_room_locked_by_client, book_reservation, edit_reservation_id, delete_reservation_id, reservation_room_menu, is_slot_available, show_available_rooms_for_slot
+    * Utilisation de `read_string`, `read_int`, `print_success`, `print_error` pour toutes les interactions
+    * Prototypes dans le .h, implémentations dans le .c
+    * Respect strict des règles métier (créneaux, jours, 7 jours max)
+
+- **administrator.h / .c**
     * Fonction : administrator_menu (appelle les menus/fonctions de client_management, room_management, reservation_room)
     * Prototypes dans le .h, implémentations dans le .c
 
-- useful_fonction.h / .c
-    * Fonctions utilitaires : exit_application (pour quitter proprement), return_menu (pour retour menu)
+
+- **useful_fonction.h / .c**
+    * Fonctions utilitaires : exit_application (pour quitter proprement), return_menu (pour retour menu), print_success, print_error, is_empty
     * Tous les menus utilisent “Exit Application” et “Return to previous menu” pour l’uniformité
     * Prototypes dans le .h, implémentations dans le .c
 
-- meeting_room.c
+
+- **meeting_room.c**
     * Fonction principale int main()
     * Appel à la fonction d’authentification (account_authentification)
     * Gestion des droits administrateur : seuls les comptes avec name = BLACHERE et prénom = Romain, ou name = MOSTACCI et prénom = Raphael, sont considérés comme administrateurs (règle codée en dur)
     * Si utilisateur reconnu : accès aux menus utilisateur ou administrateur selon cette règle
     * Si utilisateur inconnu : appel à add_client de client_management pour inscription
 
-2. Conseils et pratiques
+## 2. Conseils et pratiques
 -----------------------
 
 - Structures partagées (ex : date) à placer dans un .h commun si besoin
-- Utilisation d’identifiants uniques pour clients/salles/réservations
+- Utilisation d’identifiants uniques pour clients/salles/réservations (générés ou incrémentés automatiquement)
 - Chaque module gère son propre fichier de données (clients.dat, rooms.dat, reservations.dat, etc.)
 - Modularité : un .h/.c par module
-- Messages d’erreur et de succès pour chaque action utilisateur
+- Messages d’erreur et de succès pour chaque action utilisateur (via print_success, print_error)
 - Suppression logique : on ne supprime jamais physiquement, on rend indisponible (available = 0)
-- Cohérence des données : la suppression d’un client ou d’une salle doit invalider les réservations associées
+- Cohérence des données : la suppression d’un client ou d’une salle invalide automatiquement les réservations associées
 - Uniformisation des menus : “Exit Application” pour quitter, “Return to previous menu” pour revenir
 - Utilisation systématique de exit_application() et return_menu() dans tous les modules
 - Centralisation des includes standards via includes.h
-
-3. Intégration du module réservation (à venir)
----------------------------------------------
-
-- Prévoir la structure reservation_room et les fonctions associées
-- Gérer l’invalidation automatique des réservations lors de la suppression logique d’un client ou d’une salle
-- Respecter la même logique de modularité, suppression logique, et uniformisation des menus
 
 Cette trame est la référence pour l’architecture, la rédaction des fichiers et la progression du projet.
 À copier/coller dans la documentation ou le README pour s’y référer à tout moment.

@@ -5,7 +5,6 @@
 #include "client_management.h"
 #include "reservation_room.h"
 
-// Utility function prototypes
 // Exits the application with a message
 void exit_application();
 // Returns to the previous menu
